@@ -1,0 +1,11 @@
+version: '3.1'
+
+services:
+
+  backend-api:
+    image: backend:1
+    ports:
+      - 8000:8000
+    restart: always
+    environment:
+      TZ : Asia/Bangkok
