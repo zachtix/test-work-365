@@ -1,0 +1,19 @@
+version: '3.1'
+
+services:
+
+  frontend-covid:
+    image: covid-frontend:1
+    ports:
+      - 80:80
+    restart: always
+    environment:
+      TZ : Asia/Bangkok
+
+  covid-api:
+    image: covid-api:1
+    ports:
+      - 8000:8000
+    restart: always
+    environment:
+      TZ : Asia/Bangkok
