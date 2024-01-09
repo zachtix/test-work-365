@@ -23,37 +23,43 @@ const corsOptions = {
 
 app.use(cors());
 app.use(express.json());
+
 /**
  * @swagger
  * /get:
- *   get:
+ *   post:
  *     summary: Get data
  *     tags:
  *       - Data
- *     parameters:
- *       - in: query
- *         name: _id
- *         schema:
- *           type: string
- *         required: true
+ *     requestBody:  
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               access_token:
+ *                 type: string
+ *               _id:
+ *                 type: string
+ *             required:
+ *               - _id
+ *               - access_token
  *     responses:
  *       '200':
  *         description: Successful response
  *         content:
  *           application/json:
  *             example:
- *               msg: get success
  *               data:
- *                 _id: "1"
+ *                 _id: "20"
  *                 Seed_RepDate: "25640623"
  *                 Seed_Year: "2564"
  *                 Seeds_YearWeek: "26"
  *                 Seed_Varity: "ขาวดอกมะลิ 105"
- *                 Seed_RDCSD: "ลำปาง"
- *                 Seed_Stock2Sale: "198,325"
+ *                 Seed_RDCSD: "บึงกาฬ"
+ *                 Seed_Stock2Sale: "591,025"
  *                 Seed_Season: "1"
  *                 Seed_Crop _Year: "2564"
- * 
  *       '401':
  *         description: Unauthorized
  *         content:
@@ -61,7 +67,7 @@ app.use(express.json());
  *             example:
  *               msg: Token invalid
  */
-app.get('/get', cors(corsOptions), async (req, res) => {
+app.post('/get', cors(corsOptions), async (req, res) => {
   let jwtStatus = TokenManager.authAccess(req);
   const { _id } = req.body
   if(jwtStatus!=false){
@@ -71,16 +77,74 @@ app.get('/get', cors(corsOptions), async (req, res) => {
       const collection = db.collection('location');
   
       const result = await collection.findOne({'﻿_id': _id});
-  
       res.send(result);
+    } catch(err) {
+      console.log(err);
+      res.status(500).send({ msg: 'Internal Server Error' });
     } finally {
       await client.close();
     }
   } else{
     res.status(401)
-    res.json({msg:'Token invalid'})
+    res.send({msg:'Token invalid'})
   }
 });
+
+/**
+ * @swagger
+ * /add:
+ *   post:
+ *     summary: Add data
+ *     tags:
+ *       - Data
+ *     requestBody:  
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               access_token:
+ *                 type: string
+ *               Seed_RepDate:
+ *                 type: string
+ *               Seed_Year:
+ *                 type: string
+ *               Seeds_YearWeek:
+ *                 type: string
+ *               Seed_Varity:
+ *                 type: string
+ *               Seed_RDCSD:
+ *                 type: string
+ *               Seed_Stock2Sale:
+ *                 type: string
+ *               Seed_Season:
+ *                 type: string
+ *               Seed_Crop_Year:
+ *                 type: string
+ *             required:
+ *               - access_token
+ *               - Seed_RepDate
+ *               - Seed_Year
+ *               - Seeds_YearWeek
+ *               - Seed_Varity
+ *               - Seed_RDCSD
+ *               - Seed_Stock2Sale
+ *               - Seed_Season
+ *               - Seed_Crop_Year
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: add success
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Token invalid
+ */
 app.post('/add', cors(corsOptions), async (req, res) => {
   let jwtStatus = TokenManager.authAccess(req);
   const { Seed_RepDate, Seed_Year, Seeds_YearWeek, Seed_Varity, Seed_RDCSD, Seed_Stock2Sale, Seed_Season, Seed_Crop_Year } = req.body
@@ -113,6 +177,65 @@ app.post('/add', cors(corsOptions), async (req, res) => {
     res.json({msg:'Token invalid'})
   }
 })
+
+/**
+ * @swagger
+ * /edit:
+ *   put:
+ *     summary: Edit data
+ *     tags:
+ *       - Data
+ *     requestBody:  
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               access_token:
+ *                 type: string
+ *               _id:
+ *                 type: string
+ *               Seed_RepDate:
+ *                 type: string
+ *               Seed_Year:
+ *                 type: string
+ *               Seeds_YearWeek:
+ *                 type: string
+ *               Seed_Varity:
+ *                 type: string
+ *               Seed_RDCSD:
+ *                 type: string
+ *               Seed_Stock2Sale:
+ *                 type: string
+ *               Seed_Season:
+ *                 type: string
+ *               Seed_Crop_Year:
+ *                 type: string
+ *             required:
+ *               - access_token
+ *               - _id:
+ *               - Seed_RepDate
+ *               - Seed_Year
+ *               - Seeds_YearWeek
+ *               - Seed_Varity
+ *               - Seed_RDCSD
+ *               - Seed_Stock2Sale
+ *               - Seed_Season
+ *               - Seed_Crop_Year
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: add success
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Token invalid
+ */
 app.put('/edit', cors(corsOptions), async (req, res) => {
   let jwtStatus = TokenManager.authAccess(req);
   const { _id, Seed_RepDate, Seed_Year, Seeds_YearWeek, Seed_Varity, Seed_RDCSD, Seed_Stock2Sale, Seed_Season, Seed_Crop_Year } = req.body
@@ -142,6 +265,41 @@ app.put('/edit', cors(corsOptions), async (req, res) => {
     res.json({msg:'Token invalid'})
   }
 })
+
+/**
+ * @swagger
+ * /delete:
+ *   delete:
+ *     summary: Delete data
+ *     tags:
+ *       - Data
+ *     requestBody:  
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               access_token:
+ *                 type: string
+ *               _id:
+ *                 type: string
+ *             required:
+ *               - _id
+ *               - access_token
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: delete success
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             example:
+ *               msg: Token invalid
+ */
 app.delete('/delete', cors(corsOptions), async (req, res) => {
   let jwtStatus = TokenManager.authAccess(req);
   const { _id } = req.body

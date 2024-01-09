@@ -12,7 +12,8 @@ class TokenManager {
   }
   static authAccess(req) {
     try {
-      let accessToken = req.headers.authorization.split(' ')[1];
+      // let accessToken = req.headers.authorization.split(' ')[1];
+      let accessToken = req.body.access_token;
       let jwtRes = jwt.verify(String(accessToken),SECRET)
       return jwtRes
     }catch(err) {
